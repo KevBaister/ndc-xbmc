@@ -1,9 +1,0 @@
-NDC Session Videos
-    By Day
-        Wednesday
-        Thursday
-        Friday
-    By Category
-        Mobile
-        Javascript
-    By Speaker
