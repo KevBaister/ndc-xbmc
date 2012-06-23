@@ -1,4 +1,5 @@
-ndc-xbmc
+NDC-XBMC
+--------
 
 This plugin allows you to view the 2012 NDC session videos from within XBMC.
 
