@@ -27,22 +27,45 @@ def addDirectoryItem(name, isFolder=True, parameters={}, playable=False):
 
 def show_root_menu():
     ''' Show the plugin's root menu.'''
-    addDirectoryItem(name="Wednesday", parameters={ "name": "WED", "level": "1" }, isFolder=True)
-    addDirectoryItem(name="Thursday", parameters={ "name": "THURS", "level": "1" }, isFolder=True)
-    addDirectoryItem(name="Friday", parameters={ "name": "FRI", "level": "1" }, isFolder=True)
+    addDirectoryItem(name="2012", parameters={ "year": "2012", "level": "1" }, isFolder=True)
+    addDirectoryItem(name="2013", parameters={ "year": "2013", "level": "1" }, isFolder=True)
     xbmcplugin.endOfDirectory(handle=int(sys.argv[1]), succeeded=True)
 
-def show_video_list(url):
+def show_day_list(year):
+    ''' Show the day list.'''
+    addDirectoryItem(name="Wednesday", parameters={ "day": "WED", "year": year, "level": "2" }, isFolder=True)
+    addDirectoryItem(name="Thursday", parameters={ "day": "THURS", "year": year, "level": "2" }, isFolder=True)
+    addDirectoryItem(name="Friday", parameters={ "day": "FRI", "year": year, "level": "2" }, isFolder=True)
+    xbmcplugin.endOfDirectory(handle=int(sys.argv[1]), succeeded=True)
+
+def show_video_list(year, day):
     ''' Scrape the agenda page and display all the videos.'''
-    page = urllib2.urlopen(url)
+    baseUrl = get_base_video_url(year, day)
+    agendaComponent = get_agenda_url_component(year, day)
+    pageUrl = baseUrl + agendaComponent
+    page = urllib2.urlopen(pageUrl)
     soup = bs(page)
 
     for session in soup.findAll("td","session"):
         if session.find("p","bottomAligned") is not None:
             fullTitle = "%s - %s" % (session.find("div","title").a.string.encode("utf-8"), session.find("div","speaker").a.string.encode("utf-8"))
-            addDirectoryItem(name=fullTitle,isFolder=False,parameters={"videoUrl": "http://ndcoslo.oktaset.com" + session.find("p","bottomAligned").a["href"], "level": "2"},playable=True)
+            addDirectoryItem(name=fullTitle,isFolder=False,parameters={"videoUrl": baseUrl + session.find("p","bottomAligned").a["href"], "level": "3"},playable=True)
 
     xbmcplugin.endOfDirectory(handle=int(sys.argv[1]), succeeded=True)
+
+def get_base_video_url(year, day):
+    if year == "2012":
+        return "http://ndc2012.oktaset.com"
+    else:
+        return "http://ndcoslo.oktaset.com"
+
+def get_agenda_url_component(year, day):
+    if day == "WED":
+        return "/Agenda/wednesday"
+    elif day == "THURS":
+        return "/Agenda/thursday"
+    elif day == "FRI":
+        return "/Agenda/friday"
 
 def play_video(url):
     ''' Scrape the session page and grab the vimeo video ID.'''
@@ -58,19 +81,17 @@ def play_video(url):
 
 def main():
     params = parameters_string_to_dict(sys.argv[2])
-    name = params.get("name")
+    day = params.get("day")
     level = params.get("level")
+    year = params.get("year")
 
     if level is None:
         show_root_menu()
     elif level == "1":
-        if name == "WED":
-            show_video_list(url="http://ndcoslo.oktaset.com/Agenda/wednesday")
-        elif name == "THURS":
-            show_video_list(url="http://ndcoslo.oktaset.com/Agenda/thursday")
-        elif name == "FRI":
-            show_video_list(url="http://ndcoslo.oktaset.com/Agenda/friday")
+        show_day_list(year)
     elif level == "2":
+        show_video_list(year, day)
+    elif level == "3":
         play_video(params.get("videoUrl"))
 
 if __name__ == "__main__":

@@ -1,3 +1,7 @@
+[B]Version 2.0.0[/B]
+
+- Updated the plugin to display videos from both the 2013 and 2012 conferences.
+
 [B]Version 1.0.0[/B]
 
 - Initial Version

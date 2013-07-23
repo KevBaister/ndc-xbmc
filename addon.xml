@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
     id="plugin.video.ndc-xbmc"
-    version="1.0.0"
+    version="2.0.0"
     name="NDC Session Videos"
     provider-name="Kevin Baister">
 
